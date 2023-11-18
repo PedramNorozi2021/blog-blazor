@@ -1,0 +1,116 @@
+﻿@page "/post/{slug}"
+@using Blog.BlazorApp.ViewModels.Posts
+@inject HttpClient httpClient
+@inject IJSRuntime js
+
+<PageTitle>@slug</PageTitle>
+<HeadContent>
+    <link href="css/post.style.css" rel="stylesheet" />
+    <script suppress-error="BL9992" src="/js/alert.js"></script>
+    <script suppress-error="BL9992" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</HeadContent>
+
+
+<NavLink href="/" id="back-btn">بازگشت به صحفه اصلی</NavLink>
+<div class="main-container">
+    <div class="image-box">
+        <img src="@string.Format($"{httpClient.BaseAddress+PostItem?.ImageUrl}")" alt="">
+    </div>
+    <h1>@PostItem?.Title</h1>
+
+    <section class="user-info">
+        <img src="images/user.jpeg" alt="">
+        <div class="profile">
+            <span>@PostItem?.UserName</span>
+            <span class="create-date">تاریخ انتشار :@PostItem?.CreationDate</span>
+        </div>
+    </section>
+
+    <section class="post-body">
+        <p class="post-content">
+            @PostItem?.Body
+        </p>
+    </section>
+
+    <section class="comments">
+        <section class="add-comment-modal">
+            <form class="add-comment-modal-container">
+                <input type="hidden" id="postid-hidden-input" value="1">
+                <label for="">نظر خود را بنویسید </label>
+                <textarea class="add-comment-input" placeholder="ثبت کامنت جدید" @bind=comment></textarea>
+                <button class="add-comment-btn" @onclick=addComment @onclick:preventDefault>ثبت نظر</button>
+            </form>
+        </section>
+
+        @if (PostItem?.Comments?.Any() ?? false)
+        {
+            <div class="comments-container">
+                @foreach (var comment in PostItem.Comments)
+                {
+                    <div class="comment-item">
+                        <div class="comment-item-top">
+                            <div>
+                                <img src="images/user.jpeg" alt="">
+                                <span class="comment-user-name">@comment.UserName</span>
+                            </div>
+                            <div>پاسخ به این نظر</div>
+                            <div>@comment.CreateDate</div>
+                        </div>
+                        <div class="comment-item-top-bottom">
+                            <span>@comment.Text</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    [Parameter]
+    public string slug { get; set; }
+    private PostDetailViewModel? PostItem { get; set; }
+
+    private string? comment { get; set; }
+
+    private class Response
+    {
+        public string? msg { get; set; }
+    }
+}
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        PostItem = await httpClient.GetFromJsonAsync<PostDetailViewModel>(httpClient.BaseAddress + "api/Posts/" + slug);
+        Console.WriteLine(PostItem.Body);
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task addComment()
+    {
+        if (string.IsNullOrEmpty(comment))
+            await js.InvokeVoidAsync(identifier: "showToast", "warning", "متن کامنت خود را وارد کنید");
+
+        var response = await httpClient.PostAsJsonAsync(httpClient.BaseAddress + "api/comments", new
+        {
+            PostId = PostItem?.Id,
+            Text = comment,
+            UserName = "کاربر ناشناس"
+        });
+        Console.WriteLine(response.StatusCode);
+        if (response.StatusCode == System.Net.HttpStatusCode.Created)
+        {
+            var content = await response.Content.ReadFromJsonAsync<Response>();
+            await js.InvokeVoidAsync(identifier: "showToast", "success", content!.msg);
+            PostItem!.Comments.Insert(0, new PostCommentViewModel
+                {
+                    CreateDate = DateTime.Now.ToLongDateString(),
+                    Text = comment!,
+                    UserName = "کاربر ناشناس"
+                });
+            comment = null;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,90 @@
+﻿@using Blog.BlazorApp.ViewModels.Posts
+@using Newtonsoft.Json
+@using System.Text
+@using Tewr.Blazor.FileReader
+
+@inject NavigationManager navigationManeger
+@inject HttpClient httpClient
+@inject IFileReaderService fileRender
+
+<section class="add-post-modal">
+    <i class="fa fa-close" @onclick="closePostModal"></i>
+    <h2>ثبت پست جدید</h2>
+    <EditForm Model=AddPostViewModel OnValidSubmit=AddPost>
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+        <div>
+            <label for="">عنوان:</label>
+            <InputText placeholder="عنوان پست را وارد کنید" @bind-Value=AddPostViewModel.Title />
+        </div>
+        <div>
+            <label for="">آدرس:</label>
+            <InputText type="text" placeholder="آدرس صحفه پست را وارد کنید" @bind-Value=AddPostViewModel.Slug />
+        </div>
+        <div>
+            <label for="">تصویر:</label>
+            <input type="file" @ref="_input" @onchange="OpenFileAsync" />
+        </div>
+        <div style="margin-top: 20px;">
+            <label for="">متن بدنه:</label>
+            <InputTextArea name="" id="" @bind-Value=AddPostViewModel.Body></InputTextArea>
+        </div>
+        <button type="submit">ثبت</button>
+    </EditForm>
+</section>
+
+@code {
+
+    [Parameter]
+    public EventCallback<bool> OnClosePostModal { get; set; }
+    private AddPostViewModel AddPostViewModel = new AddPostViewModel();
+
+    private ElementReference _input;
+    private Stream stream = null;
+
+    public string? FileName { get; set; }
+    public long? Size { get; set; }
+    public string? Type { get; set; }
+}
+@functions {
+    private async Task closePostModal()
+    {
+        await OnClosePostModal.InvokeAsync(true);
+    }
+    private async Task AddPost()
+    {
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+
+        content.Add(new StringContent(AddPostViewModel.Body), "\"Body\"");
+        content.Add(new StringContent("پدرام نوروزی"), "\"UserName\"");
+        content.Add(new StringContent(AddPostViewModel.Title), "\"Title\"");
+        content.Add(new StringContent(AddPostViewModel.Slug), "\"Slug\"");
+        content.Add(new StreamContent(stream, Convert.ToInt32(stream.Length)), "File", FileName);
+
+        await httpClient.PostAsync(httpClient.BaseAddress + "api/posts", content);
+        navigationManeger.NavigateTo("/",true);
+    }
+
+    private async Task OpenFileAsync()
+    {
+        //read the files
+        var file = (await fileRender.CreateReference(_input).EnumerateFilesAsync()).FirstOrDefault();
+
+        if (file == null)
+            return;
+
+        //get the info of the file
+        var fileInfo = await file.ReadFileInfoAsync();
+        Size = fileInfo.Size;
+        Type = fileInfo.Type;
+        FileName = fileInfo.Name;
+         
+        Console.WriteLine(FileName);
+        using (var ms = await file.CreateMemoryStreamAsync((int)fileInfo.Size))
+        {
+            stream = new MemoryStream(ms.ToArray());
+        }
+    }
+
+}

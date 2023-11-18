@@ -1,0 +1,47 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property._SupportedPlatformList = browser
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = true
+build_property.IncludeAllContentForSelfExtract = 
+build_property.RootNamespace = Blog.BlazorApp
+build_property.RootNamespace = Blog.BlazorApp
+build_property.ProjectDir = C:\Users\FartakArjanCo\source\repos\Blog.BlazorApp\Blog.BlazorApp\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\FartakArjanCo\source\repos\Blog.BlazorApp\Blog.BlazorApp
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/Pages/Post.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUG9zdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/Shared/AddPostModal.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEFkZFBvc3RNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/Shared/PostItem.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFBvc3RJdGVtLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FartakArjanCo/source/repos/Blog.BlazorApp/Blog.BlazorApp/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-aj4j24unsw

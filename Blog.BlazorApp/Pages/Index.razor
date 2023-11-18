@@ -1,0 +1,85 @@
+﻿@page "/"
+@using Blog.BlazorApp.ViewModels.Posts
+@inject HttpClient httpClient
+@inject IJSRuntime js
+
+
+<HeadContent>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="css/index.style.css" rel="stylesheet" />
+    <script src="js/modal.js" suppress-error="BL9992"></script>
+</HeadContent>
+<PageTitle>Index</PageTitle>
+
+<h1 id="title">لیست پست های ارسالی</h1>
+<button id="add-post" @onclick=OpenPostModal>افزودن پست جدید</button>
+
+<section class="post-container">
+    @if (PostPaging?.Posts != null)
+    {
+        @foreach (var item in PostPaging.Posts)
+        {
+            <PostItem Post=item />
+        }
+    }
+</section>
+
+<section class="pagination-container">
+    <div class="pagination">
+        @if (PostPaging?.Paging != null)
+        {
+            @for (int i = 1; i <= PostPaging.Paging.EndPage; i++)
+            {
+                @if (PageId == i)
+                {
+                    <div class="pagination-item pagination-item-active">
+                        <a href="/?pageId=@i">@i</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="pagination-item">
+                        <a href="/?pageId=@i">@i</a>
+                    </div>
+                }
+            }
+        }
+    </div>
+</section>
+
+<AddPostModal OnClosePostModal=ClosePostModal />
+
+@code {
+    private PostPagingViewModel? PostPaging { get; set; } = new PostPagingViewModel();
+    [Parameter, SupplyParameterFromQuery(Name = "pageId")]
+    public int PageId { get; set; }
+
+    private bool ShowPostModal { get; set; }
+}
+
+@functions {
+    protected override async Task OnInitializedAsync()
+    {
+        PageId = PageId == 0 ? 1 : PageId;
+        PostPaging = await httpClient.GetFromJsonAsync<PostPagingViewModel>(httpClient.BaseAddress + "api/Posts?pageId=" + PageId);
+        ShowPostModal = false;
+        base.OnInitialized();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        PageId = PageId == 0 ? 1 : PageId;
+        PostPaging = await httpClient.GetFromJsonAsync<PostPagingViewModel>(httpClient.BaseAddress + "api/Posts?pageId=" + PageId);
+        Console.WriteLine(PostPaging!.Posts.Count);
+        base.OnParametersSet();
+    }
+
+    private async Task OpenPostModal()
+    {
+        await js.InvokeVoidAsync("openPostModal");   
+        StateHasChanged();
+    }
+    private async Task ClosePostModal()
+    {
+        await js.InvokeVoidAsync("closePostModal");   
+    }
+}
